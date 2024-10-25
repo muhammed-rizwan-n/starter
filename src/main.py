@@ -1,46 +1,45 @@
 from appwrite.client import Client
-from appwrite.services.users import Users
 from appwrite.services.databases import Databases
 from appwrite.exception import AppwriteException
 from appwrite.query import Query
 import os
 
-# This Appwrite function will be executed every time your function is triggered
 def main(context):
+    # Initialize the Appwrite client
     client = (
         Client()
         .set_endpoint(os.environ["APPWRITE_FUNCTION_API_ENDPOINT"])
         .set_project(os.environ["APPWRITE_FUNCTION_PROJECT_ID"])
         .set_key(context.req.headers["x-appwrite-key"])
     )
-    users = Users(client)
+
+    # Initialize the Appwrite Databases service
     databases = Databases(client)
 
-    # Define your database ID and collection ID
+    # Define database and collection IDs
     database_id = os.environ["DATABASE_ID"]
     collection_id = os.environ["COLLECTION_ID"]
 
-    # Extract the 'name' parameter from the URL if present
+    # Extract 'name' parameter from the query if present
     name = context.req.query.get("name")
+    if not name:
+        return context.res.json({"error": "Missing 'name' parameter"}, status=400)
 
+    # Query the database
     try:
-        if !name:
-            # Query the database for a document with the matching name
-            response = databases.list_documents(
-                database_id,
-                collection_id,
-                [Query.equal("name", "Demo user")]
-            )
+        response = databases.list_documents(
+            database_id=database_id,
+            collection_id=collection_id,
+            queries=[Query.equal("name", "De)]
+        )
 
-            # Check if any documents match the query
-            if response['total'] > 0:
-                # Return the data of the first matching user
-                return context.res.json(response['documents'][0])
-            else:
-                return context.res.json({"error": "User not found"}, status=404)
+        # Check if any documents were found
+        if response['total'] > 0:
+            # Return the first matched document
+            return context.res.json(response['documents'][0])
         else:
-            return context.res.json({"error": "Name parameter is missing"}, status=400)
+            return context.res.json({"message": "User not found"}, status=404)
 
-    except AppwriteException as err:
-        context.error("Error accessing database: " + repr(err))
-        return context.res.json({"error": "Failed to fetch user data"}, status=500)
+    except AppwriteException as e:
+        context.error("Database query failed: " + str(e))
+        return context.res.json({"error": "Database query failed"}, status=500)
