@@ -24,12 +24,12 @@ def main(context):
     name = context.req.query.get("name")
 
     try:
-        if name:
+        if !name:
             # Query the database for a document with the matching name
             response = databases.list_documents(
                 database_id,
                 collection_id,
-                [Query.equal("name", name)]
+                [Query.equal("name", "Demo user")]
             )
 
             # Check if any documents match the query
