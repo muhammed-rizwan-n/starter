@@ -14,7 +14,15 @@ def main(context):
         .set_key(context.req.headers["x-appwrite-key"])
     )
     users = Users(client)
+    databases = Databases(client)
 
+    result = databases.create_document(
+        database_id = '<DATABASE_ID>',
+        collection_id = '<COLLECTION_ID>',
+        document_id = '<DOCUMENT_ID>',
+        data = {},
+        )
+    
     try:
         response = users.list()
         # Log messages and errors to the Appwrite Console
