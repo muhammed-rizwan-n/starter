@@ -22,7 +22,7 @@ def main(context):
 
     # Extract 'name' parameter from the query if present
     name = context.req.query.get("name")
-    if not name:
+    if name:
         return context.res.json({"error": "Missing 'name' parameter"}, status=400)
 
     # Query the database
@@ -32,7 +32,6 @@ def main(context):
             collection_id=collection_id,
             queries=[Query.equal("name", "De")]
         )
-
         # Check if any documents were found
         if response['total'] > 0:
             # Return the first matched document
