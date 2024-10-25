@@ -30,7 +30,7 @@ def main(context):
         response = databases.list_documents(
             database_id=database_id,
             collection_id=collection_id,
-            queries=[Query.equal("name", "De)]
+            queries=[Query.equal("name", "De")]
         )
 
         # Check if any documents were found
